@@ -1,0 +1,27 @@
+{
+  "name": "barcode-scraper-api",
+  "version": "1.0.0",
+  "description": "Unified barcode scraper — fiyat karşılaştırma + ürün bilgisi",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "run-barcodes": "node scripts/runBarcodes.js",
+    "download": "node scripts/downloadAndUpdate.js",
+    "to-csv": "node scripts/toCsv.js",
+    "info": "node scripts/getInfo.js"
+  },
+  "dependencies": {
+    "axios": "^1.16.1",
+    "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "ioredis": "^5.10.1",
+    "nodemon": "^3.1.14",
+    "puppeteer": "^24.35.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}

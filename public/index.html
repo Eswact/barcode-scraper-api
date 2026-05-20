@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scraper API</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="site-header-inner">
+            <div class="brand">
+                <div class="brand-icon">
+                    <span class="material-symbols-outlined">barcode_scanner</span>
+                </div>
+                <span class="brand-name">Barcode Scraper</span>
+            </div>
+            <div class="header-right">
+                <div class="status-chip" id="statusChip">
+                    <span class="status-dot"></span>
+                    <span class="status-label" id="statusLabel">Bekleniyor</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+
+            <!-- Mode Tabs -->
+            <div class="mode-tabs">
+                <button class="mode-tab active" id="tab-prices" onclick="switchMode('prices')">
+                    <span class="material-symbols-outlined">monitoring</span>
+                    Fiyat Karşılaştırma
+                </button>
+                <button class="mode-tab" id="tab-products" onclick="switchMode('products')">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    Ürün Bilgisi
+                </button>
+            </div>
+
+            <!-- === PRICES PANEL === -->
+            <div class="mode-panel active" id="panel-prices">
+                <div class="page-heading">
+                    <div>
+                        <h1 class="page-title">Fiyat Karşılaştırma</h1>
+                        <p class="page-subtitle">7 markette fiyatları gerçek zamanlı karşılaştırın. Redis cache ile hızlandırılmıştır.</p>
+                    </div>
+                </div>
+
+                <div class="input-card">
+                    <div class="input-card-header">
+                        <span class="material-symbols-outlined input-card-icon">add_circle</span>
+                        <span class="input-card-title">Barkod Gir</span>
+                        <span class="input-card-hint">GTIN, EAN, UPC desteklenir</span>
+                    </div>
+                    <div class="input-card-body">
+                        <textarea id="pricesBarcodeInput" placeholder="Barkod numaralarını her satıra bir tane girin...&#10;&#10;Örnek:&#10;8690504085720&#10;8690632994055" rows="5"></textarea>
+                    </div>
+                    <div class="input-card-footer">
+                        <div class="input-footer-left">
+                            <button class="btn-secondary" onclick="clearPrices()">
+                                <span class="material-symbols-outlined">close</span>Temizle
+                            </button>
+                        </div>
+                        <div class="input-footer-right">
+                            <span class="input-footer-hint">Ctrl+Enter ile ara</span>
+                            <button class="btn-primary btn-search" id="pricesSearchBtn" onclick="searchPrices()">
+                                <span class="material-symbols-outlined">search</span>Fiyat Ara
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="loading" id="pricesLoading">
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill" id="pricesProgressFill"></div></div>
+                        <div class="progress-text" id="pricesProgressText">Başlatılıyor...</div>
+                    </div>
+                </div>
+
+                <div class="results-section" id="pricesResultsSection">
+                    <div class="results-section-header">
+                        <h2 class="results-section-title">Tarama Sonuçları</h2>
+                        <span class="results-count" id="pricesResultsCount"></span>
+                    </div>
+                    <div class="live-results" id="pricesLiveResults"></div>
+                </div>
+
+                <div class="empty-state" id="pricesEmptyState">
+                    <div class="empty-icon-wrapper">
+                        <div class="empty-icon-glow"></div>
+                        <div class="empty-icon"><span class="material-symbols-outlined">monitoring</span></div>
+                        <div class="empty-icon-badge"><span class="material-symbols-outlined">add</span></div>
+                    </div>
+                    <h3 class="empty-title">Fiyat Karşılaştırma</h3>
+                    <p class="empty-text">Barkodları girerek 7 markette aynı anda fiyat karşılaştırması yapın. En ucuz fiyat otomatik vurgulanır.</p>
+                    <div class="empty-markets">
+                        <img src="images/trendyol.png" alt="Trendyol">
+                        <img src="images/hepsiburada.png" alt="Hepsiburada">
+                        <img src="images/pazarama.png" alt="Pazarama">
+                        <img src="images/carrefour.png" alt="CarrefourSA">
+                        <img src="images/sok.png" alt="Şok">
+                        <img src="images/mopas.png" alt="Mopaş">
+                        <img src="images/afta.png" alt="Afta Market">
+                        <img src="images/market-karsilastir.svg" alt="Market Karşılaştır">
+                    </div>
+                    <div class="empty-features">
+                        <div class="empty-feature">
+                            <div class="empty-feature-icon"><span class="material-symbols-outlined">bolt</span></div>
+                            <div class="empty-feature-text"><h4>Hızlı Mod</h4><p>Platform başına tek tab, paralel tarama.</p></div>
+                        </div>
+                        <div class="empty-feature">
+                            <div class="empty-feature-icon"><span class="material-symbols-outlined">database</span></div>
+                            <div class="empty-feature-text"><h4>Redis Cache</h4><p>24 saat önbellek ile anında sonuç.</p></div>
+                        </div>
+                        <div class="empty-feature">
+                            <div class="empty-feature-icon"><span class="material-symbols-outlined">download</span></div>
+                            <div class="empty-feature-text"><h4>CSV Dışa Aktarma</h4><p>Sonuçları Excel'e aktarın.</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === PRODUCTS PANEL === -->
+            <div class="mode-panel" id="panel-products">
+                <div class="page-heading">
+                    <div>
+                        <h1 class="page-title">Ürün Bilgisi</h1>
+                        <p class="page-subtitle">Barkodan ürün adı, görseli, fiyatı ve kategori bilgisini çekin. İlk bulan kazanır.</p>
+                    </div>
+                </div>
+
+                <div class="input-card">
+                    <div class="input-card-header">
+                        <span class="material-symbols-outlined input-card-icon">add_circle</span>
+                        <span class="input-card-title">Barkod Gir</span>
+                        <span class="input-card-hint">GTIN, EAN, UPC desteklenir</span>
+                    </div>
+                    <div class="input-card-body">
+                        <textarea id="productsBarcodeInput" placeholder="Barkod numaralarını her satıra bir tane girin...&#10;&#10;Örnek:&#10;8690504085720&#10;8690632994055" rows="5"></textarea>
+                    </div>
+                    <div class="input-card-footer">
+                        <div class="input-footer-left">
+                            <button class="btn-secondary" onclick="clearProducts()">
+                                <span class="material-symbols-outlined">close</span>Temizle
+                            </button>
+                        </div>
+                        <div class="input-footer-right">
+                            <span class="input-footer-hint">Ctrl+Enter ile ara</span>
+                            <button class="btn-primary btn-search" id="productsSearchBtn" onclick="searchProducts()">
+                                <span class="material-symbols-outlined">search</span>Ürün Ara
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="loading" id="productsLoading">
+                    <div class="progress-container">
+                        <div class="progress-bar"><div class="progress-fill" id="productsProgressFill"></div></div>
+                        <div class="progress-text" id="productsProgressText">Başlatılıyor...</div>
+                    </div>
+                </div>
+
+                <div class="results-section" id="productsResultsSection">
+                    <div class="results-section-header">
+                        <h2 class="results-section-title">Tarama Sonuçları</h2>
+                        <span class="results-count" id="productsResultsCount"></span>
+                    </div>
+                    <div class="live-results" id="productsLiveResults"></div>
+                </div>
+
+                <div class="empty-state" id="productsEmptyState">
+                    <div class="empty-icon-wrapper">
+                        <div class="empty-icon-glow"></div>
+                        <div class="empty-icon"><span class="material-symbols-outlined">inventory_2</span></div>
+                        <div class="empty-icon-badge"><span class="material-symbols-outlined">add</span></div>
+                    </div>
+                    <h3 class="empty-title">Ürün Bilgisi</h3>
+                    <p class="empty-text">Barkodları girerek ürün adı, görseli, fiyatı ve kategori yolu bilgisini çekin. Sonuçlar dosyaya da kaydedilir.</p>
+                    <div class="empty-markets">
+                        <img src="images/trendyol.png" alt="Trendyol">
+                        <img src="images/hepsiburada.png" alt="Hepsiburada">
+                        <img src="images/pazarama.png" alt="Pazarama">
+                        <img src="images/carrefour.png" alt="CarrefourSA">
+                        <img src="images/sok.png" alt="Şok">
+                        <img src="images/mopas.png" alt="Mopaş">
+                        <img src="images/afta.png" alt="Afta Market">
+                    </div>
+                    <div class="empty-features">
+                        <div class="empty-feature">
+                            <div class="empty-feature-icon"><span class="material-symbols-outlined">image</span></div>
+                            <div class="empty-feature-text"><h4>Ürün Görseli</h4><p>Gerçek ürün fotoğrafını çeker.</p></div>
+                        </div>
+                        <div class="empty-feature">
+                            <div class="empty-feature-icon"><span class="material-symbols-outlined">category</span></div>
+                            <div class="empty-feature-text"><h4>Kategori Yolu</h4><p>Breadcrumb ile tam kategori bilgisi.</p></div>
+                        </div>
+                        <div class="empty-feature">
+                            <div class="empty-feature-icon"><span class="material-symbols-outlined">save</span></div>
+                            <div class="empty-feature-text"><h4>Dosyaya Kaydet</h4><p>output/product-list.json'a kaydedilir.</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="bg-blob bg-blob--tr"></div>
+    <div class="bg-blob bg-blob--bl"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
