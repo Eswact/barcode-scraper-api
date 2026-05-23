@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,9 +21,12 @@
                 <span class="brand-name">Barcode Scraper</span>
             </div>
             <div class="header-right">
+                <button class="lang-toggle" id="langToggle" onclick="toggleLang()">
+                    <img id="langFlagImg" src="images/gb.png" alt="EN">
+                </button>
                 <div class="status-chip" id="statusChip">
                     <span class="status-dot"></span>
-                    <span class="status-label" id="statusLabel">Bekleniyor</span>
+                    <span class="status-label" id="statusLabel" data-i18n="status.waiting">Bekleniyor</span>
                 </div>
             </div>
         </div>
@@ -33,45 +36,48 @@
         <div class="container">
 
             <!-- Mode Tabs -->
-            <div class="mode-tabs">
+            <div class="mode-tabs" id="modeTabs">
                 <button class="mode-tab active" id="tab-prices" onclick="switchMode('prices')">
                     <span class="material-symbols-outlined">monitoring</span>
-                    Fiyat Karşılaştırma
+                    <span data-i18n="tab.prices">Fiyat Karşılaştırma</span>
                 </button>
                 <button class="mode-tab" id="tab-products" onclick="switchMode('products')">
                     <span class="material-symbols-outlined">inventory_2</span>
-                    Ürün Bilgisi
+                    <span data-i18n="tab.products">Ürün Bilgisi</span>
                 </button>
             </div>
+            <span class="tabs-locked-label" id="tabsLockedLabel" data-i18n="tabs.locked">Tarama devam ediyor...</span>
 
             <!-- === PRICES PANEL === -->
             <div class="mode-panel active" id="panel-prices">
                 <div class="page-heading">
                     <div>
-                        <h1 class="page-title">Fiyat Karşılaştırma</h1>
-                        <p class="page-subtitle">7 markette fiyatları gerçek zamanlı karşılaştırın. Redis cache ile hızlandırılmıştır.</p>
+                        <h1 class="page-title" data-i18n="prices.title">Fiyat Karşılaştırma</h1>
+                        <p class="page-subtitle" data-i18n="prices.subtitle">7 markette fiyatları gerçek zamanlı karşılaştırın. Redis cache ile hızlandırılmıştır.</p>
                     </div>
                 </div>
 
                 <div class="input-card">
                     <div class="input-card-header">
                         <span class="material-symbols-outlined input-card-icon">add_circle</span>
-                        <span class="input-card-title">Barkod Gir</span>
-                        <span class="input-card-hint">GTIN, EAN, UPC desteklenir</span>
+                        <span class="input-card-title" data-i18n="input.title">Barkod Gir</span>
+                        <span class="input-card-hint" data-i18n="input.hint">GTIN, EAN, UPC desteklenir</span>
                     </div>
                     <div class="input-card-body">
-                        <textarea id="pricesBarcodeInput" placeholder="Barkod numaralarını her satıra bir tane girin...&#10;&#10;Örnek:&#10;8690504085720&#10;8690632994055" rows="5"></textarea>
+                        <textarea id="pricesBarcodeInput" data-i18n-ph="input.placeholder" placeholder="Barkod numaralarını her satıra bir tane girin...&#10;&#10;Örnek:&#10;8690504085720&#10;8690632994055" rows="5"></textarea>
                     </div>
                     <div class="input-card-footer">
                         <div class="input-footer-left">
                             <button class="btn-secondary" onclick="clearPrices()">
-                                <span class="material-symbols-outlined">close</span>Temizle
+                                <span class="material-symbols-outlined">close</span>
+                                <span data-i18n="btn.clear">Temizle</span>
                             </button>
                         </div>
                         <div class="input-footer-right">
-                            <span class="input-footer-hint">Ctrl+Enter ile ara</span>
+                            <span class="input-footer-hint" data-i18n="btn.shortcut">Ctrl+Enter ile ara</span>
                             <button class="btn-primary btn-search" id="pricesSearchBtn" onclick="searchPrices()">
-                                <span class="material-symbols-outlined">search</span>Fiyat Ara
+                                <span class="material-symbols-outlined">search</span>
+                                <span data-i18n="btn.searchPrices">Fiyat Ara</span>
                             </button>
                         </div>
                     </div>
@@ -80,13 +86,13 @@
                 <div class="loading" id="pricesLoading">
                     <div class="progress-container">
                         <div class="progress-bar"><div class="progress-fill" id="pricesProgressFill"></div></div>
-                        <div class="progress-text" id="pricesProgressText">Başlatılıyor...</div>
+                        <div class="progress-text" id="pricesProgressText" data-i18n="loading.init">Başlatılıyor...</div>
                     </div>
                 </div>
 
                 <div class="results-section" id="pricesResultsSection">
                     <div class="results-section-header">
-                        <h2 class="results-section-title">Tarama Sonuçları</h2>
+                        <h2 class="results-section-title" data-i18n="results.title">Tarama Sonuçları</h2>
                         <span class="results-count" id="pricesResultsCount"></span>
                     </div>
                     <div class="live-results" id="pricesLiveResults"></div>
@@ -98,8 +104,8 @@
                         <div class="empty-icon"><span class="material-symbols-outlined">monitoring</span></div>
                         <div class="empty-icon-badge"><span class="material-symbols-outlined">add</span></div>
                     </div>
-                    <h3 class="empty-title">Fiyat Karşılaştırma</h3>
-                    <p class="empty-text">Barkodları girerek 7 markette aynı anda fiyat karşılaştırması yapın. En ucuz fiyat otomatik vurgulanır.</p>
+                    <h3 class="empty-title" data-i18n="empty.prices.title">Fiyat Karşılaştırma</h3>
+                    <p class="empty-text" data-i18n="empty.prices.text">Barkodları girerek 7 markette aynı anda fiyat karşılaştırması yapın. En ucuz fiyat otomatik vurgulanır.</p>
                     <div class="empty-markets">
                         <img src="images/trendyol.png" alt="Trendyol">
                         <img src="images/hepsiburada.png" alt="Hepsiburada">
@@ -113,15 +119,24 @@
                     <div class="empty-features">
                         <div class="empty-feature">
                             <div class="empty-feature-icon"><span class="material-symbols-outlined">bolt</span></div>
-                            <div class="empty-feature-text"><h4>Hızlı Mod</h4><p>Platform başına tek tab, paralel tarama.</p></div>
+                            <div class="empty-feature-text">
+                                <h4 data-i18n="empty.prices.feat1.title">Hızlı Mod</h4>
+                                <p data-i18n="empty.prices.feat1.text">Platform başına tek tab, paralel tarama.</p>
+                            </div>
                         </div>
                         <div class="empty-feature">
                             <div class="empty-feature-icon"><span class="material-symbols-outlined">database</span></div>
-                            <div class="empty-feature-text"><h4>Redis Cache</h4><p>24 saat önbellek ile anında sonuç.</p></div>
+                            <div class="empty-feature-text">
+                                <h4 data-i18n="empty.prices.feat2.title">Redis Cache</h4>
+                                <p data-i18n="empty.prices.feat2.text">24 saat önbellek ile anında sonuç.</p>
+                            </div>
                         </div>
                         <div class="empty-feature">
                             <div class="empty-feature-icon"><span class="material-symbols-outlined">download</span></div>
-                            <div class="empty-feature-text"><h4>CSV Dışa Aktarma</h4><p>Sonuçları Excel'e aktarın.</p></div>
+                            <div class="empty-feature-text">
+                                <h4 data-i18n="empty.prices.feat3.title">CSV Dışa Aktarma</h4>
+                                <p data-i18n="empty.prices.feat3.text">Sonuçları Excel'e aktarın.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -131,30 +146,32 @@
             <div class="mode-panel" id="panel-products">
                 <div class="page-heading">
                     <div>
-                        <h1 class="page-title">Ürün Bilgisi</h1>
-                        <p class="page-subtitle">Barkodan ürün adı, görseli, fiyatı ve kategori bilgisini çekin. İlk bulan kazanır.</p>
+                        <h1 class="page-title" data-i18n="products.title">Ürün Bilgisi</h1>
+                        <p class="page-subtitle" data-i18n="products.subtitle">Barkodan ürün adı, görseli, fiyatı ve kategori bilgisini çekin. İlk bulan kazanır.</p>
                     </div>
                 </div>
 
                 <div class="input-card">
                     <div class="input-card-header">
                         <span class="material-symbols-outlined input-card-icon">add_circle</span>
-                        <span class="input-card-title">Barkod Gir</span>
-                        <span class="input-card-hint">GTIN, EAN, UPC desteklenir</span>
+                        <span class="input-card-title" data-i18n="input.title">Barkod Gir</span>
+                        <span class="input-card-hint" data-i18n="input.hint">GTIN, EAN, UPC desteklenir</span>
                     </div>
                     <div class="input-card-body">
-                        <textarea id="productsBarcodeInput" placeholder="Barkod numaralarını her satıra bir tane girin...&#10;&#10;Örnek:&#10;8690504085720&#10;8690632994055" rows="5"></textarea>
+                        <textarea id="productsBarcodeInput" data-i18n-ph="input.placeholder" placeholder="Barkod numaralarını her satıra bir tane girin...&#10;&#10;Örnek:&#10;8690504085720&#10;8690632994055" rows="5"></textarea>
                     </div>
                     <div class="input-card-footer">
                         <div class="input-footer-left">
                             <button class="btn-secondary" onclick="clearProducts()">
-                                <span class="material-symbols-outlined">close</span>Temizle
+                                <span class="material-symbols-outlined">close</span>
+                                <span data-i18n="btn.clear">Temizle</span>
                             </button>
                         </div>
                         <div class="input-footer-right">
-                            <span class="input-footer-hint">Ctrl+Enter ile ara</span>
+                            <span class="input-footer-hint" data-i18n="btn.shortcut">Ctrl+Enter ile ara</span>
                             <button class="btn-primary btn-search" id="productsSearchBtn" onclick="searchProducts()">
-                                <span class="material-symbols-outlined">search</span>Ürün Ara
+                                <span class="material-symbols-outlined">search</span>
+                                <span data-i18n="btn.searchProducts">Ürün Ara</span>
                             </button>
                         </div>
                     </div>
@@ -163,13 +180,13 @@
                 <div class="loading" id="productsLoading">
                     <div class="progress-container">
                         <div class="progress-bar"><div class="progress-fill" id="productsProgressFill"></div></div>
-                        <div class="progress-text" id="productsProgressText">Başlatılıyor...</div>
+                        <div class="progress-text" id="productsProgressText" data-i18n="loading.init">Başlatılıyor...</div>
                     </div>
                 </div>
 
                 <div class="results-section" id="productsResultsSection">
                     <div class="results-section-header">
-                        <h2 class="results-section-title">Tarama Sonuçları</h2>
+                        <h2 class="results-section-title" data-i18n="results.title">Tarama Sonuçları</h2>
                         <span class="results-count" id="productsResultsCount"></span>
                     </div>
                     <div class="live-results" id="productsLiveResults"></div>
@@ -181,8 +198,8 @@
                         <div class="empty-icon"><span class="material-symbols-outlined">inventory_2</span></div>
                         <div class="empty-icon-badge"><span class="material-symbols-outlined">add</span></div>
                     </div>
-                    <h3 class="empty-title">Ürün Bilgisi</h3>
-                    <p class="empty-text">Barkodları girerek ürün adı, görseli, fiyatı ve kategori yolu bilgisini çekin. Sonuçlar dosyaya da kaydedilir.</p>
+                    <h3 class="empty-title" data-i18n="empty.products.title">Ürün Bilgisi</h3>
+                    <p class="empty-text" data-i18n="empty.products.text">Barkodları girerek ürün adı, görseli, fiyatı ve kategori yolu bilgisini çekin. Sonuçlar dosyaya da kaydedilir.</p>
                     <div class="empty-markets">
                         <img src="images/trendyol.png" alt="Trendyol">
                         <img src="images/hepsiburada.png" alt="Hepsiburada">
@@ -195,15 +212,24 @@
                     <div class="empty-features">
                         <div class="empty-feature">
                             <div class="empty-feature-icon"><span class="material-symbols-outlined">image</span></div>
-                            <div class="empty-feature-text"><h4>Ürün Görseli</h4><p>Gerçek ürün fotoğrafını çeker.</p></div>
+                            <div class="empty-feature-text">
+                                <h4 data-i18n="empty.products.feat1.title">Ürün Görseli</h4>
+                                <p data-i18n="empty.products.feat1.text">Gerçek ürün fotoğrafını çeker.</p>
+                            </div>
                         </div>
                         <div class="empty-feature">
                             <div class="empty-feature-icon"><span class="material-symbols-outlined">category</span></div>
-                            <div class="empty-feature-text"><h4>Kategori Yolu</h4><p>Breadcrumb ile tam kategori bilgisi.</p></div>
+                            <div class="empty-feature-text">
+                                <h4 data-i18n="empty.products.feat2.title">Kategori Yolu</h4>
+                                <p data-i18n="empty.products.feat2.text">Breadcrumb ile tam kategori bilgisi.</p>
+                            </div>
                         </div>
                         <div class="empty-feature">
                             <div class="empty-feature-icon"><span class="material-symbols-outlined">save</span></div>
-                            <div class="empty-feature-text"><h4>Dosyaya Kaydet</h4><p>output/product-list.json'a kaydedilir.</p></div>
+                            <div class="empty-feature-text">
+                                <h4 data-i18n="empty.products.feat3.title">Dosyaya Kaydet</h4>
+                                <p data-i18n="empty.products.feat3.text">output/product-list.json'a kaydedilir.</p>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -1,3 +1,173 @@
+/* ========== I18N ========== */
+
+const TRANSLATIONS = {
+    tr: {
+        'status.waiting':    'Bekleniyor',
+        'status.searching':  'Aranıyor...',
+        'status.done':       'Tamamlandı',
+        'status.error':      'Hata',
+        'tab.prices':        'Fiyat Karşılaştırma',
+        'tab.products':      'Ürün Bilgisi',
+        'input.title':       'Barkod Gir',
+        'input.hint':        'GTIN, EAN, UPC desteklenir',
+        'input.placeholder': 'Barkod numaralarını her satıra bir tane girin...\n\nÖrnek:\n8690504085720\n8690632994055',
+        'btn.clear':         'Temizle',
+        'btn.shortcut':      'Ctrl+Enter ile ara',
+        'btn.searchPrices':  'Fiyat Ara',
+        'btn.searchProducts':'Ürün Ara',
+        'prices.title':      'Fiyat Karşılaştırma',
+        'prices.subtitle':   '7 markette fiyatları gerçek zamanlı karşılaştırın. Redis cache ile hızlandırılmıştır.',
+        'products.title':    'Ürün Bilgisi',
+        'products.subtitle': 'Barkodan ürün adı, görseli, fiyatı ve kategori bilgisini çekin. İlk bulan kazanır.',
+        'loading.init':      'Başlatılıyor...',
+        'results.title':     'Tarama Sonuçları',
+        'empty.prices.title':       'Fiyat Karşılaştırma',
+        'empty.prices.text':        'Barkodları girerek 7 markette aynı anda fiyat karşılaştırması yapın. En ucuz fiyat otomatik vurgulanır.',
+        'empty.prices.feat1.title': 'Hızlı Mod',
+        'empty.prices.feat1.text':  'Platform başına tek tab, paralel tarama.',
+        'empty.prices.feat2.title': 'Redis Cache',
+        'empty.prices.feat2.text':  '24 saat önbellek ile anında sonuç.',
+        'empty.prices.feat3.title': 'CSV Dışa Aktarma',
+        'empty.prices.feat3.text':  "Sonuçları Excel'e aktarın.",
+        'empty.products.title':       'Ürün Bilgisi',
+        'empty.products.text':        'Barkodları girerek ürün adı, görseli, fiyatı ve kategori yolu bilgisini çekin. Sonuçlar dosyaya da kaydedilir.',
+        'empty.products.feat1.title': 'Ürün Görseli',
+        'empty.products.feat1.text':  'Gerçek ürün fotoğrafını çeker.',
+        'empty.products.feat2.title': 'Kategori Yolu',
+        'empty.products.feat2.text':  'Breadcrumb ile tam kategori bilgisi.',
+        'empty.products.feat3.title': 'Dosyaya Kaydet',
+        'empty.products.feat3.text':  "output/product-list.json'a kaydedilir.",
+        'tabs.locked':       'Tarama devam ediyor...',
+        'lang.toggle':       'images/gb.png',
+        'cell.best':         'En Ucuz',
+        'cell.notFound':     'Bulunamadı',
+        'badge.found':       'Bulundu',
+        'badge.loading':     'Aranıyor...',
+        'badge.notFound':    'Bulunamadı',
+        'status.allFound':   'Tümünde Bulundu',
+        'status.noneFound':  'Hiçbir Yerde Bulunamadı',
+        'summary.title':     'Özet Tablo',
+        'summary.btn':       'CSV İndir',
+        'col.barcode':       'Barkod',
+        'col.lowest':        'En Düşük',
+        'col.highest':       'En Yüksek',
+        'col.bestMarket':    'En İyi Market',
+        'col.status':        'Durum',
+        'col.platform':      'Platform',
+        'col.productName':   'Ürün Adı',
+        'col.price':         'Fiyat',
+        'csv.prices.prefix':   'fiyat_karsilastirma',
+        'csv.products.prefix': 'urun_sonuclar',
+        'alert.noBarcodes':  'Lütfen en az bir barkod girin!',
+        'alert.noData':      'Henüz dışa aktarılacak veri yok!',
+        'alert.noDataProd':  'Henüz veri yok!',
+        'err.server':        'Sunucunun çalıştığından emin olun: <code>node server.js</code>',
+        // function values
+        'search.starting':   (n, p) => `${n} barkod, ${p} platformda aranıyor...`,
+        'search.progress':   (c, total) => `${c}/${total} barkod tamamlandı`,
+        'count.progress':    (c, total) => `${c} / ${total} barkod tamamlandı`,
+        'badge.searching':   (found, rem) => `${found} bulundu · ${rem} bekleniyor...`,
+        'badge.partial':     (found, total) => `${found}/${total} Markette`,
+        'summary.products':  (found, nf) => `Özet — ${found} bulundu, ${nf} bulunamadı`,
+        'prod.searching':    (n) => `${n} barkod aranıyor...`,
+    },
+    en: {
+        'status.waiting':    'Waiting',
+        'status.searching':  'Searching...',
+        'status.done':       'Completed',
+        'status.error':      'Error',
+        'tab.prices':        'Price Comparison',
+        'tab.products':      'Product Info',
+        'input.title':       'Enter Barcode',
+        'input.hint':        'GTIN, EAN, UPC supported',
+        'input.placeholder': 'Enter barcode numbers, one per line...\n\nExample:\n8690504085720\n8690632994055',
+        'btn.clear':         'Clear',
+        'btn.shortcut':      'Ctrl+Enter to search',
+        'btn.searchPrices':  'Search Prices',
+        'btn.searchProducts':'Search Products',
+        'prices.title':      'Price Comparison',
+        'prices.subtitle':   'Compare prices across 7 markets in real time. Accelerated with Redis cache.',
+        'products.title':    'Product Info',
+        'products.subtitle': 'Fetch product name, image, price and category from a barcode. First match wins.',
+        'loading.init':      'Initializing...',
+        'results.title':     'Scan Results',
+        'empty.prices.title':       'Price Comparison',
+        'empty.prices.text':        'Enter barcodes to compare prices across 7 markets simultaneously. The cheapest price is highlighted automatically.',
+        'empty.prices.feat1.title': 'Fast Mode',
+        'empty.prices.feat1.text':  'One tab per platform, parallel scanning.',
+        'empty.prices.feat2.title': 'Redis Cache',
+        'empty.prices.feat2.text':  'Instant results with 24-hour cache.',
+        'empty.prices.feat3.title': 'CSV Export',
+        'empty.prices.feat3.text':  'Export results to Excel.',
+        'empty.products.title':       'Product Info',
+        'empty.products.text':        'Enter barcodes to fetch product name, image, price and category path. Results are also saved to a file.',
+        'empty.products.feat1.title': 'Product Image',
+        'empty.products.feat1.text':  'Fetches the real product photo.',
+        'empty.products.feat2.title': 'Category Path',
+        'empty.products.feat2.text':  'Full category info with breadcrumb.',
+        'empty.products.feat3.title': 'Save to File',
+        'empty.products.feat3.text':  'Saved to output/product-list.json.',
+        'tabs.locked':       'Scan in progress...',
+        'lang.toggle':       'images/tr.png',
+        'cell.best':         'Cheapest',
+        'cell.notFound':     'Not Found',
+        'badge.found':       'Found',
+        'badge.loading':     'Searching...',
+        'badge.notFound':    'Not Found',
+        'status.allFound':   'Found in All',
+        'status.noneFound':  'Not Found Anywhere',
+        'summary.title':     'Summary Table',
+        'summary.btn':       'Download CSV',
+        'col.barcode':       'Barcode',
+        'col.lowest':        'Lowest',
+        'col.highest':       'Highest',
+        'col.bestMarket':    'Best Market',
+        'col.status':        'Status',
+        'col.platform':      'Platform',
+        'col.productName':   'Product Name',
+        'col.price':         'Price',
+        'csv.prices.prefix':   'price_comparison',
+        'csv.products.prefix': 'product_results',
+        'alert.noBarcodes':  'Please enter at least one barcode!',
+        'alert.noData':      'No data to export yet!',
+        'alert.noDataProd':  'No data yet!',
+        'err.server':        'Make sure the server is running: <code>node server.js</code>',
+        // function values
+        'search.starting':   (n, p) => `Searching ${n} barcodes across ${p} platforms...`,
+        'search.progress':   (c, total) => `${c}/${total} barcodes completed`,
+        'count.progress':    (c, total) => `${c} / ${total} barcodes completed`,
+        'badge.searching':   (found, rem) => `${found} found · ${rem} pending...`,
+        'badge.partial':     (found, total) => `${found}/${total} Markets`,
+        'summary.products':  (found, nf) => `Summary — ${found} found, ${nf} not found`,
+        'prod.searching':    (n) => `Searching ${n} barcodes...`,
+    }
+};
+
+let currentLang = localStorage.getItem('lang') || 'tr';
+
+function t(key, ...args) {
+    const val = TRANSLATIONS[currentLang][key] ?? TRANSLATIONS.tr[key];
+    return typeof val === 'function' ? val(...args) : (val ?? key);
+}
+
+function applyI18n() {
+    document.documentElement.lang = currentLang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+        el.placeholder = t(el.dataset.i18nPh);
+    });
+    const flagImg = document.getElementById('langFlagImg');
+    if (flagImg) { flagImg.src = t('lang.toggle'); flagImg.alt = currentLang === 'tr' ? 'EN' : 'TR'; }
+}
+
+function toggleLang() {
+    currentLang = currentLang === 'tr' ? 'en' : 'tr';
+    localStorage.setItem('lang', currentLang);
+    applyI18n();
+}
+
 /* ========== MODE SWITCHER ========== */
 
 let currentMode = 'prices';
@@ -9,7 +179,11 @@ function setSearching(active) {
     const tabProducts = document.getElementById('tab-products');
     tabPrices.disabled   = active;
     tabProducts.disabled = active;
-    document.querySelector('.mode-tabs').classList.toggle('tabs-locked', active);
+    const lbl = document.getElementById('tabsLockedLabel');
+    if (lbl) {
+        lbl.textContent = t('tabs.locked');
+        lbl.classList.toggle('visible', active);
+    }
 }
 
 function switchMode(mode) {
@@ -25,7 +199,7 @@ function switchMode(mode) {
 function resetStatus() {
     const chip = document.getElementById('statusChip');
     chip.className = 'status-chip';
-    document.getElementById('statusLabel').textContent = 'Bekleniyor';
+    document.getElementById('statusLabel').textContent = t('status.waiting');
 }
 
 function parseBarcodes(text) {
@@ -72,7 +246,7 @@ function ensurePriceCard(barcode, container) {
                         <span class="material-symbols-outlined">bolt</span>
                     </div>
                     <span class="result-barcode-number">${barcode}</span>
-                    <span class="result-badge badge-searching">0 bulundu · ${PRICE_PLATFORMS.length} aranıyor...</span>
+                    <span class="result-badge badge-searching">0 ${t('badge.found')} · ${PRICE_PLATFORMS.length} ${t('badge.loading')}</span>
                 </div>
             </div>
             <div class="result-prices-grid">${cells}</div>
@@ -93,7 +267,7 @@ function refreshBestPrices(barcode, prices) {
         if (isBest) {
             const div = document.createElement('div');
             div.className = 'price-cell-best-label';
-            div.textContent = 'En Ucuz';
+            div.textContent = t('cell.best');
             el.appendChild(div);
         }
     });
@@ -122,7 +296,7 @@ function patchPlatformCell(barcode, platform, price) {
                     <img src="${cfg.logo}" alt="${cfg.name}" class="price-cell-logo">
                     <span class="price-cell-market-name">${cfg.name}</span>
                 </div>
-                <div class="price-cell-not-found">Bulunamadı</div>
+                <div class="price-cell-not-found">${t('cell.notFound')}</div>
             </div>`;
     }
 }
@@ -134,11 +308,14 @@ function finalizePriceCard(barcode, state) {
     card.classList.remove('result-card--searching');
     let variant, iconVar, badgeClass, statusText, iconName;
     if (found === PRICE_PLATFORMS.length) {
-        variant = 'result-card--success'; iconVar = 'result-status-icon--success'; badgeClass = 'badge-success'; statusText = 'Tümünde Bulundu'; iconName = 'check_circle';
+        variant = 'result-card--success'; iconVar = 'result-status-icon--success'; badgeClass = 'badge-success';
+        statusText = t('status.allFound'); iconName = 'check_circle';
     } else if (found > 0) {
-        variant = 'result-card--partial'; iconVar = 'result-status-icon--partial'; badgeClass = 'badge-partial'; statusText = `${found}/${PRICE_PLATFORMS.length} Markette`; iconName = 'adjust';
+        variant = 'result-card--partial'; iconVar = 'result-status-icon--partial'; badgeClass = 'badge-partial';
+        statusText = t('badge.partial', found, PRICE_PLATFORMS.length); iconName = 'adjust';
     } else {
-        variant = 'result-card--not-found'; iconVar = 'result-status-icon--not-found'; badgeClass = 'badge-not-found'; statusText = 'Hiçbir Yerde Bulunamadı'; iconName = 'cancel';
+        variant = 'result-card--not-found'; iconVar = 'result-status-icon--not-found'; badgeClass = 'badge-not-found';
+        statusText = t('status.noneFound'); iconName = 'cancel';
     }
     card.classList.add(variant);
     const iconWrap = card.querySelector('.result-status-icon');
@@ -151,7 +328,7 @@ function finalizePriceCard(barcode, state) {
 async function searchPrices() {
     const input = document.getElementById('pricesBarcodeInput').value;
     const barcodes = parseBarcodes(input);
-    if (barcodes.length === 0) { alert('Lütfen en az bir barkod girin!'); return; }
+    if (barcodes.length === 0) { alert(t('alert.noBarcodes')); return; }
 
     const loadingDiv    = document.getElementById('pricesLoading');
     const resultsDiv    = document.getElementById('pricesLiveResults');
@@ -163,7 +340,7 @@ async function searchPrices() {
     setSearching(true);
     loadingDiv.classList.add('active');
     progressFill.style.width = '0%';
-    progressText.textContent = `${barcodes.length} barkod, ${PRICE_PLATFORMS.length} platformda aranıyor...`;
+    progressText.textContent = t('search.starting', barcodes.length, PRICE_PLATFORMS.length);
     resultsDiv.innerHTML = '';
     searchBtn.disabled = true;
     if (clearBtn) clearBtn.disabled = true;
@@ -174,7 +351,7 @@ async function searchPrices() {
     const statusChip  = document.getElementById('statusChip');
     const statusLabel = document.getElementById('statusLabel');
     statusChip.className = 'status-chip searching';
-    statusLabel.textContent = 'Aranıyor...';
+    statusLabel.textContent = t('status.searching');
 
     const barcodeState = {};
     window.pricesExportData = [];
@@ -215,31 +392,31 @@ async function searchPrices() {
                     refreshBestPrices(barcode, st.prices);
                     const hdrBadge = document.querySelector(`#price-card-${barcode} .result-badge`);
                     if (hdrBadge && st.responded < PRICE_PLATFORMS.length) {
-                        const found = PRICE_PLATFORMS.filter(p => st.prices[p]).length;
-                        hdrBadge.textContent = `${found} bulundu · ${PRICE_PLATFORMS.length - st.responded} bekleniyor...`;
+                        const foundCount = PRICE_PLATFORMS.filter(p => st.prices[p]).length;
+                        hdrBadge.textContent = t('badge.searching', foundCount, PRICE_PLATFORMS.length - st.responded);
                     }
                     if (st.responded === PRICE_PLATFORMS.length) {
                         completedBarcodes++;
                         progressFill.style.width = Math.round((completedBarcodes / barcodes.length) * 100) + '%';
-                        progressText.textContent = `${completedBarcodes}/${barcodes.length} barkod tamamlandı`;
+                        progressText.textContent = t('search.progress', completedBarcodes, barcodes.length);
                         finalizePriceCard(barcode, st);
                         window.pricesExportData.push({ barcode, prices: { ...st.prices } });
-                        document.getElementById('pricesResultsCount').textContent = `${completedBarcodes} / ${barcodes.length} barkod tamamlandı`;
+                        document.getElementById('pricesResultsCount').textContent = t('count.progress', completedBarcodes, barcodes.length);
                     }
                 }
                 if (data.type === 'complete') {
                     loadingDiv.classList.remove('active');
                     displayPricesSummary(window.pricesExportData, resultsDiv);
                     statusChip.className = 'status-chip done';
-                    statusLabel.textContent = 'Tamamlandı';
+                    statusLabel.textContent = t('status.done');
                 }
                 if (data.type === 'error') throw new Error(data.message || 'Bilinmeyen hata');
             }
         }
     } catch (error) {
-        resultsDiv.innerHTML = `<div class="error"><strong>Hata:</strong> ${error.message}<br><br>Sunucunun çalıştığından emin olun: <code>node server.js</code></div>`;
+        resultsDiv.innerHTML = `<div class="error"><strong>${t('status.error')}:</strong> ${error.message}<br><br>${t('err.server')}</div>`;
         loadingDiv.classList.remove('active');
-        statusChip.className = 'status-chip'; statusLabel.textContent = 'Hata';
+        statusChip.className = 'status-chip'; statusLabel.textContent = t('status.error');
     } finally {
         searchBtn.disabled = false;
         if (clearBtn) clearBtn.disabled = false;
@@ -251,14 +428,14 @@ function displayPricesSummary(results, container) {
     if (document.querySelector('#panel-prices .summary-section')) return;
     const rows = results.map(result => {
         const prices = PRICE_PLATFORMS.filter(p => result.prices[p]).map(p => ({ market: p, value: parseFloat(result.prices[p]) }));
-        const lowest  = prices.length ? Math.min(...prices.map(p => p.value)) : null;
-        const highest = prices.length ? Math.max(...prices.map(p => p.value)) : null;
+        const lowest   = prices.length ? Math.min(...prices.map(p => p.value)) : null;
+        const highest  = prices.length ? Math.max(...prices.map(p => p.value)) : null;
         const bestEntry = prices.find(p => p.value === lowest);
         const found = prices.length;
         let statusClass, statusText;
-        if (found === PRICE_PLATFORMS.length) { statusClass = 'status-success'; statusText = 'Tümünde Bulundu'; }
-        else if (found > 0) { statusClass = 'status-partial'; statusText = `${found}/${PRICE_PLATFORMS.length} Markette`; }
-        else { statusClass = 'status-not-found'; statusText = 'Bulunamadı'; }
+        if (found === PRICE_PLATFORMS.length) { statusClass = 'status-success'; statusText = t('status.allFound'); }
+        else if (found > 0) { statusClass = 'status-partial'; statusText = t('badge.partial', found, PRICE_PLATFORMS.length); }
+        else { statusClass = 'status-not-found'; statusText = t('badge.notFound'); }
         const bestMarket = bestEntry ? marketConfig[bestEntry.market] : null;
         return `<tr>
             <td class="summary-barcode">${result.barcode}</td>
@@ -272,14 +449,20 @@ function displayPricesSummary(results, container) {
     container.insertAdjacentHTML('beforeend', `
         <div class="summary-section">
             <div class="summary-section-header">
-                <h3 class="summary-section-title">Özet Tablo</h3>
+                <h3 class="summary-section-title">${t('summary.title')}</h3>
                 <button class="btn-export" onclick="exportPricesToCsv()">
-                    <span class="material-symbols-outlined">download</span>CSV İndir
+                    <span class="material-symbols-outlined">download</span>${t('summary.btn')}
                 </button>
             </div>
             <div class="summary-table-wrapper">
                 <table class="summary-table">
-                    <thead><tr><th>Barkod</th><th>En Düşük</th><th>En Yüksek</th><th>En İyi Market</th><th>Durum</th></tr></thead>
+                    <thead><tr>
+                        <th>${t('col.barcode')}</th>
+                        <th>${t('col.lowest')}</th>
+                        <th>${t('col.highest')}</th>
+                        <th>${t('col.bestMarket')}</th>
+                        <th>${t('col.status')}</th>
+                    </tr></thead>
                     <tbody>${rows}</tbody>
                 </table>
             </div>
@@ -288,14 +471,14 @@ function displayPricesSummary(results, container) {
 
 function exportPricesToCsv() {
     const data = window.pricesExportData || [];
-    if (!data.length) { alert('Henüz dışa aktarılacak veri yok!'); return; }
-    const header = `Barkod,${PRICE_PLATFORMS.map(k => marketConfig[k].name).join(',')}`;
+    if (!data.length) { alert(t('alert.noData')); return; }
+    const header = `${t('col.barcode')},${PRICE_PLATFORMS.map(k => marketConfig[k].name).join(',')}`;
     let csv = header + '\n';
     data.forEach(row => {
         const cells = PRICE_PLATFORMS.map(p => row.prices[p] || '');
-        csv += [row.barcode, ...cells.map(c => c === '' ? 'Bulunamadı' : c)].join(',') + '\n';
+        csv += [row.barcode, ...cells.map(c => c === '' ? t('cell.notFound') : c)].join(',') + '\n';
     });
-    downloadCsv(csv, `fiyat_karsilastirma_${today()}.csv`);
+    downloadCsv(csv, `${t('csv.prices.prefix')}_${today()}.csv`);
 }
 
 function clearPrices() {
@@ -321,7 +504,7 @@ function ensureProductCard(barcode, container) {
                         <span class="material-symbols-outlined">bolt</span>
                     </div>
                     <span class="result-barcode-number">${barcode}</span>
-                    <span class="result-badge badge-searching">Aranıyor...</span>
+                    <span class="result-badge badge-searching">${t('badge.loading')}</span>
                 </div>
             </div>
         </div>`);
@@ -351,7 +534,7 @@ function resolveProductCard(result) {
                         <span class="material-symbols-outlined">check_circle</span>
                     </div>
                     <span class="result-barcode-number">${result.barcode}</span>
-                    <span class="result-badge badge-success">Bulundu</span>
+                    <span class="result-badge badge-success">${t('badge.found')}</span>
                 </div>
             </div>
             <div class="product-detail">
@@ -372,7 +555,7 @@ function resolveProductCard(result) {
                         <span class="material-symbols-outlined">cancel</span>
                     </div>
                     <span class="result-barcode-number">${result.barcode}</span>
-                    <span class="result-badge badge-not-found">Bulunamadı</span>
+                    <span class="result-badge badge-not-found">${t('badge.notFound')}</span>
                 </div>
             </div>`;
     }
@@ -381,7 +564,7 @@ function resolveProductCard(result) {
 async function searchProducts() {
     const input = document.getElementById('productsBarcodeInput').value;
     const barcodes = parseBarcodes(input);
-    if (barcodes.length === 0) { alert('Lütfen en az bir barkod girin!'); return; }
+    if (barcodes.length === 0) { alert(t('alert.noBarcodes')); return; }
 
     const loadingDiv    = document.getElementById('productsLoading');
     const resultsDiv    = document.getElementById('productsLiveResults');
@@ -393,7 +576,7 @@ async function searchProducts() {
     setSearching(true);
     loadingDiv.classList.add('active');
     progressFill.style.width = '0%';
-    progressText.textContent = `${barcodes.length} barkod aranıyor...`;
+    progressText.textContent = t('prod.searching', barcodes.length);
     resultsDiv.innerHTML = '';
     searchBtn.disabled = true;
     if (clearBtn) clearBtn.disabled = true;
@@ -404,7 +587,7 @@ async function searchProducts() {
     const statusChip  = document.getElementById('statusChip');
     const statusLabel = document.getElementById('statusLabel');
     statusChip.className = 'status-chip searching';
-    statusLabel.textContent = 'Aranıyor...';
+    statusLabel.textContent = t('status.searching');
 
     window.productsExportData = [];
     barcodes.forEach(b => ensureProductCard(b, resultsDiv));
@@ -438,22 +621,22 @@ async function searchProducts() {
                     window.productsExportData.push(data);
                     completed++;
                     progressFill.style.width = Math.round((completed / barcodes.length) * 100) + '%';
-                    progressText.textContent  = `${completed}/${barcodes.length} barkod tamamlandı`;
-                    document.getElementById('productsResultsCount').textContent = `${completed} / ${barcodes.length} barkod tamamlandı`;
+                    progressText.textContent  = t('search.progress', completed, barcodes.length);
+                    document.getElementById('productsResultsCount').textContent = t('count.progress', completed, barcodes.length);
                 }
                 if (data.type === 'complete') {
                     loadingDiv.classList.remove('active');
                     displayProductsSummary(window.productsExportData, resultsDiv);
                     statusChip.className  = 'status-chip done';
-                    statusLabel.textContent = 'Tamamlandı';
+                    statusLabel.textContent = t('status.done');
                 }
                 if (data.type === 'error') throw new Error(data.message || 'Bilinmeyen hata');
             }
         }
     } catch (error) {
-        resultsDiv.innerHTML = `<div class="error"><strong>Hata:</strong> ${error.message}<br><br>Sunucunun çalıştığından emin olun: <code>node server.js</code></div>`;
+        resultsDiv.innerHTML = `<div class="error"><strong>${t('status.error')}:</strong> ${error.message}<br><br>${t('err.server')}</div>`;
         loadingDiv.classList.remove('active');
-        statusChip.className = 'status-chip'; statusLabel.textContent = 'Hata';
+        statusChip.className = 'status-chip'; statusLabel.textContent = t('status.error');
     } finally {
         searchBtn.disabled = false;
         if (clearBtn) clearBtn.disabled = false;
@@ -476,23 +659,29 @@ function displayProductsSummary(results, container) {
                 <td><div class="summary-market-cell">${logoHtml}<span class="summary-market-name">${market.name}</span></div></td>
                 <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.productTitle || '—'}</td>
                 <td class="summary-lowest">${p.productPrice ? '₺' + p.productPrice : '—'}</td>
-                <td><span class="status-badge status-success">Bulundu</span></td>
+                <td><span class="status-badge status-success">${t('badge.found')}</span></td>
             </tr>`;
         }
-        return `<tr><td class="summary-barcode">${r.barcode}</td><td colspan="3">—</td><td><span class="status-badge status-not-found">Bulunamadı</span></td></tr>`;
+        return `<tr><td class="summary-barcode">${r.barcode}</td><td colspan="3">—</td><td><span class="status-badge status-not-found">${t('badge.notFound')}</span></td></tr>`;
     }).join('');
 
     container.insertAdjacentHTML('beforeend', `
         <div class="summary-section">
             <div class="summary-section-header">
-                <h3 class="summary-section-title">Özet — ${found} bulundu, ${notFound} bulunamadı</h3>
+                <h3 class="summary-section-title">${t('summary.products', found, notFound)}</h3>
                 <button class="btn-export" onclick="exportProductsToCsv()">
-                    <span class="material-symbols-outlined">download</span>CSV İndir
+                    <span class="material-symbols-outlined">download</span>${t('summary.btn')}
                 </button>
             </div>
             <div class="summary-table-wrapper">
                 <table class="summary-table">
-                    <thead><tr><th>Barkod</th><th>Platform</th><th>Ürün Adı</th><th>Fiyat</th><th>Durum</th></tr></thead>
+                    <thead><tr>
+                        <th>${t('col.barcode')}</th>
+                        <th>${t('col.platform')}</th>
+                        <th>${t('col.productName')}</th>
+                        <th>${t('col.price')}</th>
+                        <th>${t('col.status')}</th>
+                    </tr></thead>
                     <tbody>${rows}</tbody>
                 </table>
             </div>
@@ -501,9 +690,9 @@ function displayProductsSummary(results, container) {
 
 function exportProductsToCsv() {
     const data = window.productsExportData || [];
-    if (!data.length) { alert('Henüz veri yok!'); return; }
+    if (!data.length) { alert(t('alert.noDataProd')); return; }
     const esc = v => { const s = String(v ?? ''); return (s.includes(',') || s.includes('"')) ? `"${s.replace(/"/g, '""')}"` : s; };
-    let csv = 'Barkod,Platform,Ürün Adı,Fiyat,Kategori\n';
+    let csv = `${t('col.barcode')},${t('col.platform')},${t('col.productName')},${t('col.price')},${t('col.status')}\n`;
     data.forEach(r => {
         if (r.success) {
             const p = r.product || {};
@@ -511,10 +700,10 @@ function exportProductsToCsv() {
             const category = Array.isArray(p.categoryPath) ? p.categoryPath.join(' > ') : '';
             csv += [r.barcode, market, p.productTitle || '', p.productPrice || '', category].map(esc).join(',') + '\n';
         } else {
-            csv += [r.barcode, 'Bulunamadı', '', '', ''].map(esc).join(',') + '\n';
+            csv += [r.barcode, t('badge.notFound'), '', '', ''].map(esc).join(',') + '\n';
         }
     });
-    downloadCsv(csv, `urun_sonuclar_${today()}.csv`);
+    downloadCsv(csv, `${t('csv.products.prefix')}_${today()}.csv`);
 }
 
 function clearProducts() {
@@ -551,3 +740,7 @@ document.addEventListener('keypress', (e) => {
         else searchProducts();
     }
 });
+
+/* ========== INIT ========== */
+
+applyI18n();
