@@ -12,13 +12,16 @@ Real-time barcode price comparison and product lookup across 8 Turkish marketpla
 npm install
 ```
 
-Optional `.env` for Redis:
+Optional `.env`:
 
 ```env
+PORT=3000
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 REDIS_CACHE_TTL_HOURS=24
 ```
+
+Redis is optional — the API works without it, caching is simply skipped.
 
 ```bash
 npm run dev   # development (nodemon)
