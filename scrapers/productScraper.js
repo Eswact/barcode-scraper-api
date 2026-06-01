@@ -401,4 +401,36 @@ async function fetchBarcodes(barcodes, onResult = null) {
     return results;
 }
 
-module.exports = { fetchBarcodes };
+// Fetch single
+let sharedBrowser = null;
+let sharedPages   = null;
+
+async function getSharedBrowser() {
+    if (!sharedBrowser || !sharedBrowser.isConnected()) {
+        sharedBrowser = await launchBrowser();
+        sharedPages   = await createPages(sharedBrowser);
+        console.log("[SHARED] Browser başlatıldı.");
+    }
+    return { browser: sharedBrowser, pages: sharedPages };
+}
+
+async function fetchSingle(barcode) {
+    // Önce cache'e bak
+    const productList = loadProductList();
+    const existingMap = new Map(productList.map(p => [String(p.barcode), p]));
+    const notFoundSet = new Set(loadNotFoundBarcodes().map(b => String(b)));
+
+    if (existingMap.has(String(barcode))) {
+        console.log(`[CACHE HIT] ${barcode}`);
+        return { ...existingMap.get(String(barcode)), success: true };
+    }
+    if (notFoundSet.has(String(barcode))) {
+        console.log(`[CACHE NOT FOUND] ${barcode}`);
+        return { success: false, barcode, message: "Ürün bulunamadı" };
+    }
+
+    const { browser, pages } = await getSharedBrowser();
+    return await fetchBarcode(barcode, pages, browser);
+}
+
+module.exports = { fetchBarcodes, fetchSingle };
