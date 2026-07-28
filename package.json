@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "render-build": "npm install && npx puppeteer browsers install chrome",
     "dev": "nodemon server.js",
     "run-barcodes": "node scripts/runBarcodes.js",
     "download": "node scripts/downloadAndUpdate.js",
