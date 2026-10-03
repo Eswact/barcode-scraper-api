@@ -1,9 +1,12 @@
+// browser: true -> Puppeteer (bot korumasi duz HTTP istegine 403 donuyor).
+// Digerleri server-rendered; HTML'i axios ile cekmek ayni sonucu cok daha ucuza veriyor.
 const MARKETS = {
     trendyol: {
         searchUrl: b => `https://www.trendyol.com/sr?q=${b}`,
         baseUrl:   "https://www.trendyol.com",
-        timeout:   8000,
+        timeout:   15000,
         waitMs:    0,
+        browser:   true,
     },
     hepsiburada: {
         searchUrl: b => `https://www.hepsiburada.com/ara?q=${b}`,
@@ -20,8 +23,9 @@ const MARKETS = {
     carrefour: {
         searchUrl: b => `https://www.carrefoursa.com/search/?text=${b}`,
         baseUrl:   "https://www.carrefoursa.com",
-        timeout:   12000,
+        timeout:   15000,
         waitMs:    1500,
+        browser:   true,
     },
     mopas: {
         searchUrl: b => `https://mopas.com.tr/search/?text=${b}`,

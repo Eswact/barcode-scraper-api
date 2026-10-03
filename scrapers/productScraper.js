@@ -2,6 +2,7 @@ const cheerio = require("cheerio");
 const fs = require("fs");
 const { MARKETS } = require("../config/markets");
 const { USER_AGENT, launchBrowser } = require("./browser");
+const { fetchHtml } = require("./http");
 const { normalizePrice } = require("../utils/price");
 const { outputPath, ensureDirForFile } = require("../scripts/datasFs");
 
@@ -239,9 +240,10 @@ async function setupPage(page, marketName = null) {
     });
 }
 
+// Sadece browser marketler için tab açılır; diğerleri HTTP ile çekilir
 async function createPages(browser) {
     const pages = {};
-    for (const marketName of Object.keys(MARKETS)) {
+    for (const marketName of Object.keys(MARKETS).filter(name => MARKETS[name].browser)) {
         const page = await browser.newPage();
         await setupPage(page, marketName);
         pages[marketName] = page;
@@ -261,7 +263,12 @@ async function recreatePage(browser, pages, marketName) {
 }
 
 async function fetchBreadcrumb(breadcrumbPage, marketName, productUrl) {
-    if (!breadcrumbPage || !breadcrumbParsers[marketName]) return [];
+    if (!breadcrumbParsers[marketName]) return [];
+    if (!MARKETS[marketName].browser) {
+        try { return breadcrumbParsers[marketName](cheerio.load(await fetchHtml(productUrl, 20000))) || []; }
+        catch { return []; }
+    }
+    if (!breadcrumbPage) return [];
     try {
         await breadcrumbPage.goto(productUrl, { waitUntil: "domcontentloaded", timeout: 20000 });
         const waitSel = breadcrumbWaitSelectors[marketName];
@@ -292,11 +299,17 @@ async function restartAllPages(browser, pages) {
     console.log("[RESTART] Tüm sayfalar yeniden oluşturuldu.");
 }
 
+async function loadSearchHtml(page, marketName, url, timeout) {
+    if (!MARKETS[marketName].browser) return fetchHtml(url, timeout);
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout });
+    return page.content();
+}
+
 async function doFetchForMarket(page, marketName, barcode, winner, pages, browser) {
     const timeout = slowMarkets.has(marketName) ? 18000 : 12000;
-    await page.goto(MARKETS[marketName].searchUrl(barcode), { waitUntil: "domcontentloaded", timeout });
+    const html = await loadSearchHtml(page, marketName, MARKETS[marketName].searchUrl(barcode), timeout);
     if (winner.value) return;
-    const $ = cheerio.load(await page.content());
+    const $ = cheerio.load(html);
     const items = parsers[marketName]($);
     if (items && items.length && items[0].productPrice) {
         items[0].productPrice = normalizePrice(items[0].productPrice);
@@ -320,7 +333,7 @@ async function tryMarket(marketName, page, barcode, winner, pages, browser) {
     try {
         await doFetchForMarket(page, marketName, barcode, winner, pages, browser);
     } catch (err) {
-        if (DETACHED_FRAME_PATTERN.test(err.message) && browser) {
+        if (DETACHED_FRAME_PATTERN.test(err.message) && browser && MARKETS[marketName].browser) {
             try {
                 const newPage = await recreatePage(browser, pages, marketName);
                 await doFetchForMarket(newPage, marketName, barcode, winner, pages, browser);
@@ -334,10 +347,10 @@ async function tryMarket(marketName, page, barcode, winner, pages, browser) {
 }
 
 async function fetchBarcode(barcode, pages, browser) {
-    const mainEntries = Object.entries(pages).filter(([name]) => name !== "_breadcrumb" && name !== FALLBACK_MARKET);
+    const mainMarkets = Object.keys(MARKETS).filter(name => name !== FALLBACK_MARKET);
     const winner = { value: null };
-    await Promise.allSettled(mainEntries.map(([marketName, page]) => tryMarket(marketName, page, barcode, winner, pages, browser)));
-    if (!winner.value && pages[FALLBACK_MARKET]) {
+    await Promise.allSettled(mainMarkets.map(marketName => tryMarket(marketName, pages[marketName], barcode, winner, pages, browser)));
+    if (!winner.value && MARKETS[FALLBACK_MARKET]) {
         await tryMarket(FALLBACK_MARKET, pages[FALLBACK_MARKET], barcode, winner, pages, browser);
     }
     if (!winner.value) {

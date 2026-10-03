@@ -1,6 +1,7 @@
 const cheerio = require("cheerio");
 const { MARKETS } = require("../config/markets");
 const { USER_AGENT, launchBrowser } = require("./browser");
+const { fetchHtml } = require("./http");
 const { normalizePrice } = require("../utils/price");
 
 const parsers = {
@@ -66,12 +67,25 @@ function extractFirstPrice(parsed) {
     return normalizePrice(parsed[0]);
 }
 
+// page sadece browser marketlerde gerekli; HTTP marketlerde null olabilir
 async function scrapeSinglePage(page, market, url) {
     try {
-        await page.setUserAgent(USER_AGENT);
         const timeout = MARKETS[market]?.timeout ?? 8000;
-        await page.goto(url, { waitUntil: "domcontentloaded", timeout });
-        const $ = cheerio.load(await page.content());
+        let html;
+        if (MARKETS[market]?.browser) {
+            await page.setUserAgent(USER_AGENT);
+            try {
+                await page.goto(url, { waitUntil: "domcontentloaded", timeout });
+            } catch (err) {
+                // Tab tekrar kullanılınca önceki sayfanın client-side yönlendirmesi yeni navigasyonu kesebiliyor
+                if (!/ERR_ABORTED/.test(err.message)) throw err;
+                await page.goto(url, { waitUntil: "domcontentloaded", timeout });
+            }
+            html = await page.content();
+        } else {
+            html = await fetchHtml(url, timeout);
+        }
+        const $ = cheerio.load(html);
         return extractFirstPrice(parsers[market]($));
     } catch (err) {
         console.warn(`[prices] ${market} hata: ${err.message}`);
@@ -86,14 +100,17 @@ async function fetchBarcodePricesParallel(barcode, browser) {
     await Promise.all(
         Object.entries(MARKETS).map(async ([market, cfg]) => {
             try {
-                const page = await browser.newPage();
-                await page.setRequestInterception(true);
-                page.on("request", (req) => {
-                    if (["image", "stylesheet", "font", "media"].includes(req.resourceType())) req.abort();
-                    else req.continue();
-                });
+                let page = null;
+                if (cfg.browser) {
+                    page = await browser.newPage();
+                    await page.setRequestInterception(true);
+                    page.on("request", (req) => {
+                        if (["image", "stylesheet", "font", "media"].includes(req.resourceType())) req.abort();
+                        else req.continue();
+                    });
+                }
                 const price = await scrapeSinglePage(page, market, cfg.searchUrl(barcode));
-                await page.close();
+                if (page) await page.close();
                 if (price) prices[market] = price;
                 else notFoundMarkets.push(market);
             } catch (err) {

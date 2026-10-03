@@ -57,13 +57,15 @@ router.post("/search-stream-fast", async (req, res) => {
 
     const BLOCKED = new Set(["image", "stylesheet", "font", "media"]);
 
-    try {
-        const browser = await launchBrowser();
+    // Chrome sadece browser marketler için ve ilk ihtiyaçta başlatılır; HTTP marketler beklemez
+    let browserPromise = null;
+    const getBrowser = () => (browserPromise ??= launchBrowser());
 
+    try {
         await Promise.all(
             Object.entries(MARKETS).map(async ([market, cfg]) => {
                 const createPage = async () => {
-                    const p = await browser.newPage();
+                    const p = await (await getBrowser()).newPage();
                     await p.setRequestInterception(true);
                     p.on("request", (req) => BLOCKED.has(req.resourceType()) ? req.abort() : req.continue());
                     return p;
@@ -81,17 +83,23 @@ router.post("/search-stream-fast", async (req, res) => {
                         continue;
                     }
 
-                    if (!page) {
-                        page = await createPage();
-                    } else if (consecutiveFailures >= 2) {
-                        await page.close().catch(() => {});
-                        page = await createPage();
-                        consecutiveFailures = 0;
+                    let price = null;
+                    try {
+                        if (cfg.browser && !page) {
+                            page = await createPage();
+                        } else if (cfg.browser && consecutiveFailures >= 2) {
+                            await page.close().catch(() => {});
+                            page = await createPage();
+                            consecutiveFailures = 0;
+                        }
+
+                        if (cfg.waitMs > 0) await new Promise(resolve => setTimeout(resolve, cfg.waitMs));
+
+                        price = await scrapeSinglePage(page, market, cfg.searchUrl(barcode));
+                    } catch (err) {
+                        // Chrome başlatılamazsa sadece bu market etkilenir, HTTP sonuçları akmaya devam eder
+                        console.warn(`[prices] ${market} hata: ${err.message.split("\n")[0]}`);
                     }
-
-                    if (cfg.waitMs > 0) await new Promise(resolve => setTimeout(resolve, cfg.waitMs));
-
-                    const price = await scrapeSinglePage(page, market, cfg.searchUrl(barcode));
                     price ? consecutiveFailures = 0 : consecutiveFailures++;
                     await cacheSet(cacheKey, price);
                     send(res, { type: "result", barcode, platform: market, price: price || null });
@@ -101,7 +109,7 @@ router.post("/search-stream-fast", async (req, res) => {
             })
         );
 
-        await browser.close();
+        if (browserPromise) await browserPromise.then(b => b.close()).catch(() => {});
         send(res, { type: "complete", message: `${barcodes.length} barkodun taraması tamamlandı.`, totalBarcodes: barcodes.length, totalPlatforms: Object.keys(MARKETS).length });
         res.end();
     } catch (error) {
