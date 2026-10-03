@@ -11,17 +11,17 @@ const parsers = {
         );
     },
     hepsiburada: ($) => {
-        if ($(".SearchResultSummary")) {
-            return $(".ProductList ul li").get().map((el, i) =>
-                $(el).find(`div[data-test-id="final-price-${i + 1}"]`).text().trim() || ""
-            );
-        }
-        return false;
+        // Unknown barcodes (esp. EAN-8) fall back to fuzzy search with dozens of unrelated results
+        const items = $(".ProductList ul li").get();
+        if (items.length === 0 || items.length > 5) return false;
+        return items.map((el, i) =>
+            $(el).find(`div[data-test-id="final-price-${i + 1}"]`).text().trim() || ""
+        );
     },
     pazarama: ($) => {
         if ($(".product-card").get().length > 1) return false;
         return $(".product-card").get().map((el) =>
-            $(el).find(".product-card__price .leading-tight").text().trim() || ""
+            $(el).find(".product-card__price .leading-tight").last().text().trim() || ""
         );
     },
     carrefour: ($) => {
@@ -38,9 +38,9 @@ const parsers = {
         );
     },
     aftaMarket: ($) => {
-        if ($(".catalogWrapper .productItem").get().length > 1) return false;
-        return $(".catalogWrapper .productItem").get().map((el) =>
-            $(el).find(".productPrice .currentPrice").text().trim() || ""
+        if ($('[id^="catalog-"] [data-toggle="product"]').get().length > 1) return false;
+        return $('[id^="catalog-"] [data-toggle="product"]').get().map((el) =>
+            $(el).find('[data-toggle="price-sell-vat"]').first().text().trim() || ""
         );
     },
     sokMarket: ($) => {

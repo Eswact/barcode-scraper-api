@@ -69,7 +69,8 @@ router.post("/search-stream-fast", async (req, res) => {
                     return p;
                 };
 
-                let page = await createPage();
+                // Opened lazily so fully-cached markets never create a tab
+                let page = null;
                 let consecutiveFailures = 0;
 
                 for (const barcode of barcodes) {
@@ -80,7 +81,9 @@ router.post("/search-stream-fast", async (req, res) => {
                         continue;
                     }
 
-                    if (consecutiveFailures >= 2) {
+                    if (!page) {
+                        page = await createPage();
+                    } else if (consecutiveFailures >= 2) {
                         await page.close().catch(() => {});
                         page = await createPage();
                         consecutiveFailures = 0;
@@ -94,7 +97,7 @@ router.post("/search-stream-fast", async (req, res) => {
                     send(res, { type: "result", barcode, platform: market, price: price || null });
                 }
 
-                await page.close().catch(() => {});
+                if (page) await page.close().catch(() => {});
             })
         );
 

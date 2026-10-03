@@ -33,11 +33,13 @@ redis.on("error", (err) => {
 
 redis.on("ready", () => {
     redisAvailable = true;
-    console.log(`[Redis] Bağlantı başarılı — cache aktif (TTL: ${CACHE_TTL / 3600}s)`);
+    console.log(`[Redis] Bağlantı başarılı — cache aktif (TTL: ${CACHE_TTL / 3600}h)`);
 });
 
 async function checkRedis() {
     try {
+        // lazyConnect + enableOfflineQueue:false rejects commands until connected
+        await redis.connect();
         await redis.ping();
         redisAvailable = true;
         console.log(`[Redis] Bağlantı başarılı — cache aktif (TTL: ${CACHE_TTL / 3600}h)`);

@@ -5,8 +5,11 @@ function normalizePrice(price) {
     if (cleaned.includes(",")) {
         // Turkish format: dot = thousands separator, comma = decimal separator
         cleaned = cleaned.replace(/\./g, "").replace(",", ".");
+    } else if (/^\d{1,3}(\.\d{3})+$/.test(cleaned)) {
+        // No comma, dot-grouped thousands only (e.g. Trendyol "2.299 TL")
+        cleaned = cleaned.replace(/\./g, "");
     }
-    // No comma: dot is already the decimal separator — leave as-is
+    // Otherwise: dot is already the decimal separator — leave as-is
     const parsed = parseFloat(cleaned);
     return isNaN(parsed) ? null : parsed.toFixed(2);
 }

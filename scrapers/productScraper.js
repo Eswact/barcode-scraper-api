@@ -28,6 +28,8 @@ const parsers = {
     hepsiburada: ($) => {
         const firstItem = $("li#i0");
         if (firstItem.length === 0) return false;
+        // Unknown barcodes (esp. EAN-8) fall back to fuzzy search with dozens of unrelated results
+        if ($(".ProductList ul li").length > 5) return false;
         return [{
             productImgSrc: firstItem.find("picture img").attr("src") || "",
             productTitle:  firstItem.find('[data-test-id^="title-"] a').text().trim() || "",
@@ -54,12 +56,12 @@ const parsers = {
         }));
     },
     aftaMarket: ($) => {
-        if ($(".catalogWrapper .productItem").get().length > 1) return false;
-        return $(".catalogWrapper .productItem").get().map((el) => ({
-            productImgSrc: $(el).find(".stImage").data("src") || "",
-            productTitle:  $(el).find(".vitrin-urun-adi").text().trim() || "",
-            productPrice:  $(el).find(".productPrice .currentPrice").text().trim() || "",
-            productUrl:    $(el).find("a.detailLink").first().attr("href") || "",
+        if ($('[id^="catalog-"] [data-toggle="product"]').get().length > 1) return false;
+        return $('[id^="catalog-"] [data-toggle="product"]').get().map((el) => ({
+            productImgSrc: $(el).find('img[data-toggle="product-image"]').attr("data-src") || "",
+            productTitle:  $(el).find('[data-toggle="product-title"]').text().trim() || "",
+            productPrice:  $(el).find('[data-toggle="price-sell-vat"]').first().text().trim() || "",
+            productUrl:    $(el).find('a[data-toggle="product-url"]').first().attr("href") || "",
         }));
     },
     carrefour: ($) => {
@@ -100,7 +102,7 @@ const breadcrumbWaitSelectors = {
     hepsiburada: '[data-test-id="breadcrumb-last-item"]',
     pazarama:    '[data-testid="base-breadcrumb-link"]',
     mopas:       ".container-fluid.breadcrumb",
-    aftaMarket:  "#navigasyon ul.breadcrumb",
+    aftaMarket:  'script[type="application/ld+json"]',
     carrefour:   'script[type="application/ld+json"]',
     sokMarket:   '[class*="Breadcrumb_breadcrumbs"]',
 };
@@ -154,10 +156,17 @@ const breadcrumbParsers = {
         return items;
     },
     aftaMarket: ($) => {
-        const items = [];
-        $("#navigasyon ul.breadcrumb li a").each((_, el) => {
-            const title = $(el).attr("title");
-            if (title && title !== "Anasayfa") items.push(title);
+        // No visible breadcrumb anymore; Product JSON-LD has "category": "A > B > C"
+        let items = [];
+        $('script[type="application/ld+json"]').each((_, el) => {
+            if (items.length) return;
+            try {
+                const data = JSON.parse($(el).html());
+                const product = (data["@graph"] || [data]).find(n => n["@type"] === "Product");
+                if (product && typeof product.category === "string") {
+                    items = product.category.split(">").map(s => s.trim()).filter(Boolean);
+                }
+            } catch {}
         });
         return items;
     },

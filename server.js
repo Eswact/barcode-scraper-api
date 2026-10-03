@@ -10,6 +10,12 @@ const productRoutes = require("./routes/products");
 ensureOutputDir();
 checkRedis();
 
+// puppeteer-extra stealth evasions can reject outside any awaited chain (e.g. a CDP
+// protocol timeout on a new tab); log instead of letting it kill the whole server.
+process.on("unhandledRejection", (err) => {
+  console.error("[unhandledRejection]", err && err.message ? err.message : err);
+});
+
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
