@@ -16,13 +16,13 @@ const TRANSLATIONS = {
         'btn.searchPrices':  'Fiyat Ara',
         'btn.searchProducts':'Ürün Ara',
         'prices.title':      'Fiyat Karşılaştırma',
-        'prices.subtitle':   '7 markette fiyatları gerçek zamanlı karşılaştırın. Redis cache ile hızlandırılmıştır.',
+        'prices.subtitle':   '8 markette fiyatları gerçek zamanlı karşılaştırın.',
         'products.title':    'Ürün Bilgisi',
-        'products.subtitle': 'Barkodan ürün adı, görseli, fiyatı ve kategori bilgisini çekin. İlk bulan kazanır.',
+        'products.subtitle': 'Barkoddan ürün adı, görseli, fiyatı ve kategori bilgisini çekin. İlk bulan kazanır.',
         'loading.init':      'Başlatılıyor...',
         'results.title':     'Tarama Sonuçları',
         'empty.prices.title':       'Fiyat Karşılaştırma',
-        'empty.prices.text':        'Barkodları girerek 7 markette aynı anda fiyat karşılaştırması yapın. En ucuz fiyat otomatik vurgulanır.',
+        'empty.prices.text':        'Barkodları girerek 8 markette aynı anda fiyat karşılaştırması yapın. En ucuz fiyat otomatik işaretlenir.',
         'empty.prices.feat1.title': 'Hızlı Mod',
         'empty.prices.feat1.text':  'Platform başına tek tab, paralel tarama.',
         'empty.prices.feat2.title': 'Redis Cache',
@@ -38,7 +38,6 @@ const TRANSLATIONS = {
         'empty.products.feat3.title': 'Dosyaya Kaydet',
         'empty.products.feat3.text':  "output/product-list.json'a kaydedilir.",
         'tabs.locked':       'Tarama devam ediyor...',
-        'lang.toggle':       'images/gb.png',
         'cell.best':         'En Ucuz',
         'cell.notFound':     'Bulunamadı',
         'badge.found':       'Bulundu',
@@ -86,13 +85,13 @@ const TRANSLATIONS = {
         'btn.searchPrices':  'Search Prices',
         'btn.searchProducts':'Search Products',
         'prices.title':      'Price Comparison',
-        'prices.subtitle':   'Compare prices across 7 markets in real time. Accelerated with Redis cache.',
+        'prices.subtitle':   'Compare prices across 8 marketplaces in real time.',
         'products.title':    'Product Info',
         'products.subtitle': 'Fetch product name, image, price and category from a barcode. First match wins.',
         'loading.init':      'Initializing...',
         'results.title':     'Scan Results',
         'empty.prices.title':       'Price Comparison',
-        'empty.prices.text':        'Enter barcodes to compare prices across 7 markets simultaneously. The cheapest price is highlighted automatically.',
+        'empty.prices.text':        'Enter barcodes to compare prices across 8 marketplaces at once. The cheapest price is marked automatically.',
         'empty.prices.feat1.title': 'Fast Mode',
         'empty.prices.feat1.text':  'One tab per platform, parallel scanning.',
         'empty.prices.feat2.title': 'Redis Cache',
@@ -108,7 +107,6 @@ const TRANSLATIONS = {
         'empty.products.feat3.title': 'Save to File',
         'empty.products.feat3.text':  'Saved to output/product-list.json.',
         'tabs.locked':       'Scan in progress...',
-        'lang.toggle':       'images/tr.png',
         'cell.best':         'Cheapest',
         'cell.notFound':     'Not Found',
         'badge.found':       'Found',
@@ -158,15 +156,41 @@ function applyI18n() {
     document.querySelectorAll('[data-i18n-ph]').forEach(el => {
         el.placeholder = t(el.dataset.i18nPh);
     });
-    const flagImg = document.getElementById('langFlagImg');
-    if (flagImg) { flagImg.src = t('lang.toggle'); flagImg.alt = currentLang === 'tr' ? 'EN' : 'TR'; }
+    const sw = document.getElementById('langSwitch');
+    if (sw) {
+        sw.dataset.cur = currentLang;
+        sw.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === currentLang)));
+    }
 }
 
-function toggleLang() {
-    currentLang = currentLang === 'tr' ? 'en' : 'tr';
+function setLang(lang) {
+    currentLang = lang;
     localStorage.setItem('lang', currentLang);
     applyI18n();
 }
+
+function toggleLang() {
+    setLang(currentLang === 'tr' ? 'en' : 'tr');
+}
+
+/* ========== THEME ========== */
+
+const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+const isDark = () => document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && darkQuery.matches);
+
+function syncThemeToggle() {
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.setAttribute('aria-pressed', String(isDark()));
+}
+
+function toggleTheme() {
+    const next = isDark() ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch {}
+    syncThemeToggle();
+}
+
+darkQuery.addEventListener('change', syncThemeToggle);
 
 /* ========== MODE SWITCHER ========== */
 
@@ -243,7 +267,6 @@ function ensurePriceCard(barcode, container) {
             <div class="result-card-header">
                 <div class="result-card-left">
                     <div class="result-status-icon result-status-icon--searching">
-                        <span class="material-symbols-outlined">bolt</span>
                     </div>
                     <span class="result-barcode-number">${barcode}</span>
                     <span class="result-badge badge-searching">0 ${t('badge.found')} · ${PRICE_PLATFORMS.length} ${t('badge.loading')}</span>
@@ -306,20 +329,20 @@ function finalizePriceCard(barcode, state) {
     if (!card) return;
     const found = PRICE_PLATFORMS.filter(p => state.prices[p] != null).length;
     card.classList.remove('result-card--searching');
-    let variant, iconVar, badgeClass, statusText, iconName;
+    let variant, iconVar, badgeClass, statusText;
     if (found === PRICE_PLATFORMS.length) {
         variant = 'result-card--success'; iconVar = 'result-status-icon--success'; badgeClass = 'badge-success';
-        statusText = t('status.allFound'); iconName = 'check_circle';
+        statusText = t('status.allFound');
     } else if (found > 0) {
         variant = 'result-card--partial'; iconVar = 'result-status-icon--partial'; badgeClass = 'badge-partial';
-        statusText = t('badge.partial', found, PRICE_PLATFORMS.length); iconName = 'adjust';
+        statusText = t('badge.partial', found, PRICE_PLATFORMS.length);
     } else {
         variant = 'result-card--not-found'; iconVar = 'result-status-icon--not-found'; badgeClass = 'badge-not-found';
-        statusText = t('status.noneFound'); iconName = 'cancel';
+        statusText = t('status.noneFound');
     }
     card.classList.add(variant);
     const iconWrap = card.querySelector('.result-status-icon');
-    if (iconWrap) { iconWrap.className = 'result-status-icon ' + iconVar; iconWrap.innerHTML = `<span class="material-symbols-outlined">${iconName}</span>`; }
+    if (iconWrap) { iconWrap.className = 'result-status-icon ' + iconVar; }
     const badge = card.querySelector('.result-badge');
     if (badge) { badge.className = 'result-badge ' + badgeClass; badge.textContent = statusText; }
     refreshBestPrices(barcode, state.prices);
@@ -450,8 +473,7 @@ function displayPricesSummary(results, container) {
         <div class="summary-section">
             <div class="summary-section-header">
                 <h3 class="summary-section-title">${t('summary.title')}</h3>
-                <button class="btn-export" onclick="exportPricesToCsv()">
-                    <span class="material-symbols-outlined">download</span>${t('summary.btn')}
+                <button class="btn-export" onclick="exportPricesToCsv()">${t('summary.btn')}
                 </button>
             </div>
             <div class="summary-table-wrapper">
@@ -501,7 +523,6 @@ function ensureProductCard(barcode, container) {
             <div class="result-card-header">
                 <div class="result-card-left">
                     <div class="result-status-icon result-status-icon--searching">
-                        <span class="material-symbols-outlined">bolt</span>
                     </div>
                     <span class="result-barcode-number">${barcode}</span>
                     <span class="result-badge badge-searching">${t('badge.loading')}</span>
@@ -520,7 +541,7 @@ function resolveProductCard(result) {
         const market  = marketConfig[result.site] || { name: result.site, logo: null };
         const imgHtml = product.productImgSrc
             ? `<img class="product-img" src="${product.productImgSrc}" alt="" onerror="this.style.display='none'">`
-            : `<div class="product-img-placeholder"><span class="material-symbols-outlined">image_not_supported</span></div>`;
+            : `<div class="product-img-placeholder"></div>`;
         const logoHtml = market.logo ? `<img src="${market.logo}" class="market-logo" alt="${market.name}">` : '';
         const categoryHtml = Array.isArray(product.categoryPath) && product.categoryPath.length
             ? `<div class="product-category">${product.categoryPath.map(c => `<span class="category-crumb">${c}</span>`).join('')}</div>`
@@ -531,7 +552,6 @@ function resolveProductCard(result) {
             <div class="result-card-header">
                 <div class="result-card-left">
                     <div class="result-status-icon result-status-icon--success">
-                        <span class="material-symbols-outlined">check_circle</span>
                     </div>
                     <span class="result-barcode-number">${result.barcode}</span>
                     <span class="result-badge badge-success">${t('badge.found')}</span>
@@ -552,7 +572,6 @@ function resolveProductCard(result) {
             <div class="result-card-header">
                 <div class="result-card-left">
                     <div class="result-status-icon result-status-icon--not-found">
-                        <span class="material-symbols-outlined">cancel</span>
                     </div>
                     <span class="result-barcode-number">${result.barcode}</span>
                     <span class="result-badge badge-not-found">${t('badge.notFound')}</span>
@@ -669,8 +688,7 @@ function displayProductsSummary(results, container) {
         <div class="summary-section">
             <div class="summary-section-header">
                 <h3 class="summary-section-title">${t('summary.products', found, notFound)}</h3>
-                <button class="btn-export" onclick="exportProductsToCsv()">
-                    <span class="material-symbols-outlined">download</span>${t('summary.btn')}
+                <button class="btn-export" onclick="exportProductsToCsv()">${t('summary.btn')}
                 </button>
             </div>
             <div class="summary-table-wrapper">
@@ -744,3 +762,4 @@ document.addEventListener('keypress', (e) => {
 /* ========== INIT ========== */
 
 applyI18n();
+syncThemeToggle();
